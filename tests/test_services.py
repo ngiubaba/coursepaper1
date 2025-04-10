@@ -1,6 +1,8 @@
 import json
 from typing import TypedDict
+
 import pytest
+
 from src.services import search_individual_transfers
 
 Transaction = TypedDict(

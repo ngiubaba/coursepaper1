@@ -13,7 +13,9 @@ log_file = "logs/reports.log"
 log_ok_str = "was executed without errors"
 makedirs("logs", exist_ok=True)
 logger = logging.getLogger(__name__)
-file_formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s: %(message)s")
+file_formatter = logging.Formatter(
+    "%(asctime)s %(filename)s %(levelname)s: %(message)s"
+)
 file_handler = logging.FileHandler(log_file, mode="w")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
@@ -42,14 +44,19 @@ def write_report(
                 with open(report_filename, "w", encoding="utf-8") as f:
                     json.dump(json_data, f, ensure_ascii=False)
             except Exception as e:
-                logger.error(f"decorator write_report was executed with error: {e}, func is {inner_name}")
+                logger.error(
+                    f"decorator write_report was executed with error: {e}, func is {inner_name}"
+                )
+
         return wrapper
+
     return decorator
 
 
 @write_report()
 def spending_by_category(
-    transactions: pd.DataFrame, category: str, date: Optional[str] = None) -> pd.DataFrame:
+    transactions: pd.DataFrame, category: str, date: Optional[str] = None
+) -> pd.DataFrame:
     """отчет за 3 месяца"""
 
     filtered_df = pd.DataFrame()
@@ -58,7 +65,9 @@ def spending_by_category(
         try:
             date_end = dt.datetime.strptime(date, "%d.%m.%Y").date()
         except Exception as e:
-            logger.warning(f"spending_by_category was executed with error: {e}, date: {date}, used current date.")
+            logger.warning(
+                f"spending_by_category was executed with error: {e}, date: {date}, used current date."
+            )
     date_start = date_end - dt.timedelta(days=1)
     month_start = (date_start.month + 9) % 12
     date_start = date_start.replace(month=month_start)
@@ -66,7 +75,9 @@ def spending_by_category(
         year_start = date_end.year - 1
         date_start = date_start.replace(year=year_start)
     try:
-        transactions["payment_date"] = pd.to_datetime(transactions["Дата платежа"], format="%d.%m.%Y").dt.date
+        transactions["payment_date"] = pd.to_datetime(
+            transactions["Дата платежа"], format="%d.%m.%Y"
+        ).dt.date
     except Exception as e:
         logger.error(f"spending_by_category was executed with error: {e}")
         return filtered_df

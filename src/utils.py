@@ -15,7 +15,9 @@ log_file = "logs/utils.log"
 log_ok_str = "was executed without errors"
 makedirs("logs", exist_ok=True)
 logger = logging.getLogger(__name__)
-file_formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s: %(message)s")
+file_formatter = logging.Formatter(
+    "%(asctime)s %(filename)s %(levelname)s: %(message)s"
+)
 file_handler = logging.FileHandler(log_file, mode="w")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
@@ -63,7 +65,10 @@ def get_date(date_str: str) -> datetime.date | None:
 
 
 def exchange(
-    amount: float, currency_code: str, exchange_date: datetime.date, get_currency_rate: OUTER
+    amount: float,
+    currency_code: str,
+    exchange_date: datetime.date,
+    get_currency_rate: OUTER,
 ) -> float | None:
     """сумма обмена в рубли"""
 
@@ -71,7 +76,9 @@ def exchange(
         return amount
     rate = get_currency_rate(currency_code, exchange_date)
     if rate is None:
-        logger.warning("exchange was executed with error: get_currency_rate was returned None")
+        logger.warning(
+            "exchange was executed with error: get_currency_rate was returned None"
+        )
         return None
     amount_rub = rate * amount
     logger.debug(f"exchange {log_ok_str}")
@@ -81,27 +88,34 @@ def exchange(
 def get_currency_rates(inner: INNER) -> OUTER:
     """обмен на рубли"""
 
-    currency_rates: dict[datetime.date, dict[str, float]] = (dict())
+    currency_rates: dict[datetime.date, dict[str, float]] = dict()
 
     def wrapper(currency_code: str, date: datetime.date) -> float | None:
 
         if date in currency_rates:
             if currency_code in currency_rates[date]:
                 return currency_rates[date][currency_code]
-            logger.warning(f"get_currency_rates didn't find {currency_code} in {currency_rates} at {date}")
+            logger.warning(
+                f"get_currency_rates didn't find {currency_code} in {currency_rates} at {date}"
+            )
             return None
 
         currency_rates_by_inner = inner(date)
         if currency_rates_by_inner is None:
-            logger.warning(f"get_currency_rates at {date} was executed inner and returned None")
+            logger.warning(
+                f"get_currency_rates at {date} was executed inner and returned None"
+            )
             return None
 
         currency_rates[date] = currency_rates_by_inner
         if currency_code in currency_rates_by_inner:
             logger.debug(f"wrapper in get_currency_rate {log_ok_str}")
             return currency_rates_by_inner[currency_code]
-        logger.warning(f"get_currency_rates didn't find {currency_code} in {currency_rates} at {date}")
+        logger.warning(
+            f"get_currency_rates didn't find {currency_code} in {currency_rates} at {date}"
+        )
         return None
+
     return wrapper
 
 

@@ -9,14 +9,21 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
-from src.utils import (exchange, get_currency_rates_by_cbr, get_user_settings,
-                       mask_card, read_excel)
+from src.utils import (
+    exchange,
+    get_currency_rates_by_cbr,
+    get_user_settings,
+    mask_card,
+    read_excel,
+)
 
 log_file = "logs/views.log"
 log_ok_str = "was executed without errors"
 os.makedirs("logs", exist_ok=True)
 logger = logging.getLogger(__name__)
-file_formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s: %(message)s")
+file_formatter = logging.Formatter(
+    "%(asctime)s %(filename)s %(levelname)s: %(message)s"
+)
 file_handler = logging.FileHandler(log_file, mode="w")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
@@ -25,7 +32,9 @@ logger.setLevel(logging.DEBUG)
 
 INNER = Callable[[datetime.date], dict[str, float] | None]
 OUTER = Callable[[str, datetime.date], float | None]
-CardType = TypedDict("CardType", {"last_digits": str, "total_spent": float, "cashback": float})
+CardType = TypedDict(
+    "CardType", {"last_digits": str, "total_spent": float, "cashback": float}
+)
 Transaction = TypedDict(
     "Transaction",
     {
@@ -80,14 +89,17 @@ def greeting(time: datetime.time) -> str:
 
 
 def get_cards_info(
-    df: pd.DataFrame, date: datetime.date, get_currency_rate: OUTER) -> list[CardType]:
+    df: pd.DataFrame, date: datetime.date, get_currency_rate: OUTER
+) -> list[CardType]:
     """список карт и сумма потраченных денег"""
 
     cards: list[CardType] = list()
     try:
         date_end = date
         date_start = date.replace(day=1)
-        df["payment_date"] = pd.to_datetime(df["Дата платежа"], format='%d.%m.%Y').dt.date
+        df["payment_date"] = pd.to_datetime(
+            df["Дата платежа"], format="%d.%m.%Y"
+        ).dt.date
         transactions_data = df.loc[
             (df["payment_date"] >= date_start)
             & (df["payment_date"] <= date_end)
@@ -139,7 +151,8 @@ def get_cards_info(
 
 
 def get_top_transactions(
-    df: pd.DataFrame, date: datetime.date, get_currency_rate: OUTER) -> list[Transaction]:
+    df: pd.DataFrame, date: datetime.date, get_currency_rate: OUTER
+) -> list[Transaction]:
     """getting top 5 transactions by 'Сумма платежа'"""
 
     transactions: list[Transaction] = list()
@@ -147,7 +160,9 @@ def get_top_transactions(
     try:
         date_end = date
         date_start = date.replace(day=1)
-        df["payment_date"] = pd.to_datetime(df["Дата платежа"], format='%d.%m.%Y').dt.date
+        df["payment_date"] = pd.to_datetime(
+            df["Дата платежа"], format="%d.%m.%Y"
+        ).dt.date
         transactions_data = df.loc[
             (df["payment_date"] >= date_start)
             & (df["payment_date"] <= date_end)
@@ -205,7 +220,8 @@ def get_top_transactions(
 
 
 def get_user_prefer_currency_rates(
-    user_prefer_currency: list[str], get_currency_rate: OUTER) -> list[Currency]:
+    user_prefer_currency: list[str], get_currency_rate: OUTER
+) -> list[Currency]:
     """получение курсов валют из файла и вывод их"""
 
     rates: list[Currency] = list()
@@ -232,7 +248,9 @@ def get_user_stocks(stocks: list[str]) -> list[SandP500]:
         resp = requests.get(url)
 
         if not resp.ok:
-            logger.warning(f"get_user_stocks was executed with error get data from {url}: {resp.json()}")
+            logger.warning(
+                f"get_user_stocks was executed with error get data from {url}: {resp.json()}"
+            )
             return user_stocks
 
         stocks_data = resp.json()
@@ -264,7 +282,9 @@ def main_page(date_str: str = "") -> str:
         top_transactions = get_top_transactions(df, date, get_currency_rates_by_cbr)
         user_settings = get_user_settings("user_settings.json")
         if user_settings is None:
-            logger.error("the main_page was executed with error: can't read user_settings.json")
+            logger.error(
+                "the main_page was executed with error: can't read user_settings.json"
+            )
             return json_str
         user_prefer_currencies = user_settings["user_currencies"]
         currency_rates = get_user_prefer_currency_rates(

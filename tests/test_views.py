@@ -3,12 +3,18 @@ import json
 from collections.abc import Callable
 from typing import TypedDict
 from unittest.mock import patch
+
 import pandas as pd
 import pytest
 
-from src.views import (get_cards_info, get_top_transactions,
-                       get_user_prefer_currency_rates, get_user_stocks,
-                       greeting, main_page)
+from src.views import (
+    get_cards_info,
+    get_top_transactions,
+    get_user_prefer_currency_rates,
+    get_user_stocks,
+    greeting,
+    main_page,
+)
 
 INNER = Callable[[datetime.date], dict[str, float] | None]
 OUTER = Callable[[str, datetime.date], float | None]

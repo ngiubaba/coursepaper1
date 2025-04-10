@@ -1,10 +1,19 @@
 import datetime
 from collections.abc import Callable
 from unittest.mock import Mock, patch
+
 import pandas as pd
 import pytest
-from src.utils import (exchange, get_currency_rates, get_currency_rates_by_cbr,
-                       get_date, get_user_settings, mask_card, read_excel)
+
+from src.utils import (
+    exchange,
+    get_currency_rates,
+    get_currency_rates_by_cbr,
+    get_date,
+    get_user_settings,
+    mask_card,
+    read_excel,
+)
 
 INNER = Callable[[datetime.date], dict[str, float] | None]
 OUTER = Callable[[str, datetime.date], float | None]
@@ -52,9 +61,27 @@ def test_get_date(date_str: str, date: datetime.date) -> None:
 @pytest.mark.parametrize(
     "amount, currency_code, date, func, result",
     [
-        (100.0, "RUB", datetime.date(day=1, month=2, year=1992), lambda x, y: 1.0, 100.0),
-        (100.0, "USD", datetime.date(day=2, month=2, year=1992), lambda x, y: 2.0, 200.0),
-        (100.0, "USD", datetime.date(day=1, month=2, year=1992), lambda x, y: None, None),
+        (
+            100.0,
+            "RUB",
+            datetime.date(day=1, month=2, year=1992),
+            lambda x, y: 1.0,
+            100.0,
+        ),
+        (
+            100.0,
+            "USD",
+            datetime.date(day=2, month=2, year=1992),
+            lambda x, y: 2.0,
+            200.0,
+        ),
+        (
+            100.0,
+            "USD",
+            datetime.date(day=1, month=2, year=1992),
+            lambda x, y: None,
+            None,
+        ),
     ],
 )
 def test_exchange(

@@ -29,7 +29,9 @@ log_file = "logs/services.log"
 log_ok_str = "was executed without errors"
 makedirs("logs", exist_ok=True)
 logger = logging.getLogger(__name__)
-file_formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s: %(message)s")
+file_formatter = logging.Formatter(
+    "%(asctime)s %(filename)s %(levelname)s: %(message)s"
+)
 file_handler = logging.FileHandler(log_file, mode="w")
 file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
@@ -61,7 +63,9 @@ def search_individual_transfers(transactions: list[Transaction]) -> str:
         return ""
 
     if len(filtered_transactions) == 0:
-        logger.warning("search_individual_transfers received empty transaction data after filtering.")
+        logger.warning(
+            "search_individual_transfers received empty transaction data after filtering."
+        )
         return ""
 
     transactions_json = json.dumps(filtered_transactions, ensure_ascii=False)

@@ -1,8 +1,11 @@
 import datetime
 from unittest.mock import call, mock_open, patch
+
 import pandas as pd
 import pytest
+
 from src.reports import spending_by_category, write_report
+
 
 @pytest.mark.parametrize(
     "data, category, json_data, date",
@@ -76,7 +79,9 @@ def test_spending_by_category(
     with patch("builtins.open", m):
         spending_by_category(data, category, date)
     today = datetime.date.today().strftime("%Y-%m-%d")
-    m.assert_called_once_with(f"data/spending_by_category_{today}.json", "w", encoding="utf-8")
+    m.assert_called_once_with(
+        f"data/spending_by_category_{today}.json", "w", encoding="utf-8"
+    )
     handle = m()
     handle.write.assert_has_calls(json_data)
 
@@ -114,9 +119,7 @@ def test_spending_by_category_bad_filename() -> None:
         ),
     ],
 )
-def test_spending_by_category_bad_dataframe(
-    data: pd.DataFrame, category: str
-) -> None:
+def test_spending_by_category_bad_dataframe(data: pd.DataFrame, category: str) -> None:
     """тест функции spending_by_category"""
 
     with patch("logging.Logger.error") as mock_logger:
